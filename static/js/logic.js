@@ -36,5 +36,4 @@ L.geoJson(data).addTo(myMap);
 
 //var earthquakes = []
 
-
-// Define a markerSize() function that will give each earthquake a different color based on its depth  
+// Define a markerSize() function that will give each earthquake a different color based on its depth
