@@ -1,39 +1,93 @@
-// Creating initial map object 
+// Use this link to get the GeoJSON earthquake data
+let queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson?";
+
+// Create initial map object 
 var myMap = L.map("map", {
-  center: [39.8283, -98.5795],
-  zoom: 5
+  // Set the initial center of the map
+ center: [39.8283, -98.5795],
+ // Set the initial zoom level
+ zoom: 5
 });
 
-// Adding the tile layer
+// Add a tile layer (the background map image) to map
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(myMap);
 
-// Use this link to get the GeoJSON data
-let link = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson?";
+// Perform a GET request for all earthquakes in past day 
+d3.json(queryUrl).then((data) => {
+    // Console log the data and inspect 
+    console.log(data);
 
-// Getting our GeoJSON data for all earthquakes in past day 
-d3.json(link).then(function(data) {
-console.log(data);
-// Creating a GeoJSON layer with the retrieved data
-L.geoJson(data).addTo(myMap);
-}); 
+    // Use earthquake features to determine marker style 
+    function mapStyle(feature) {
+        return {
+            opacity: 1,
+            fillOpacity: 0.75,
+            fillColor: mapColor(feature.geometry.coordinates[2]),
+            color: "black",
+            radius: mapRadius(feature.properties.mag),
+            stroke: true,
+            weight: 0.5
+        };
+    }
 
-//let coordinates = data.features[0].geometry.coordinates; 
+    // Use earthquake depth to determine marker color (darker = greater depth)
+    function mapColor(depth) {
+        switch (true) {
+            case depth > 90:
+                return "#ae0c00";
+            case depth > 70:
+                return "#ff2111";
+            case depth > 50:
+                return "#ff7733";
+            case depth > 30:
+                return "#ffaa33";
+            case depth > 10:
+                return "#8aff2f";
+            default:
+                return "#e1ff2f";
+        }
+    }
 
-//console.log(coordinates)
+    // Use earthquake magnitude to determine marker radius (higher magnitude = larger radius)
+    function mapRadius(mag) {
+        if (mag === 0) {
+            return 1;
+        }
 
-//var earthquake = data.features; 
+        return mag * 5;
+    }
 
-//features.forEach((id) => {
+    // Create a GeoJSON layer that contains the earthquake data
+    L.geoJson(data, {
+          pointToLayer: function (feature, latlng) {
+            return L.circleMarker(latlng);
+        },
+        // Apply map styling (colors and circle radius) based on quake depth and magnitude
+        style: mapStyle,
+        // Run the onEachFeature function once for each piece of data in the array and bind a popup
+            //containing the magnitude, location, and depth for each earthquake 
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup("Magnitude: " + feature.properties.mag + "<br>Location: " + feature.properties.place + "<br>Depth: " + feature.geometry.coordinates[2]);
 
-  //console.log(id); 
-//});
+        }
+    // Add the formatted earthquake data to the map 
+    }).addTo(myMap);
 
-// Define a markerSize() function that will give each earthquake a different radius based on its magnitude 
-//function markerSize(magnitude) {
-  //return Math.sqrt(magnitude) * 50;
+// Create a legend with bins for the earthquake depth (darker = greater depth)
+var legend = L.control({position: "bottomright"});
+legend.onAdd = function() {
+  var div = L.DomUtil.create("div", "info legend"),
+  depth = [-10, 10, 30, 50, 70, 90];
 
-//var earthquakes = []
-
-// Define a markerSize() function that will give each earthquake a different color based on its depth
+  // Loop through the data and apply the depth color to the legend corresponding to the depth bins
+  for (var i = 0; i < depth.length; i++) {
+    div.innerHTML +=
+    '<i style="background:' + mapColor(depth[i] + 1) + '"></i> ' + depth[i] + (depth[i + 1] ? '&ndash;' + depth[i + 1] + '<br>' : '+');
+  }
+  return div;
+};
+// Add legend to map, and add code to index.html file to complete legend formatting 
+legend.addTo(myMap)
+});
