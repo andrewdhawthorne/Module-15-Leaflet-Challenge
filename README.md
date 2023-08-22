@@ -44,8 +44,8 @@ https://leafletjs.com/examples/quick-start/ (html file code and markers)
 
 https://www.tutorialspoint.com/javascript/javascript_switch_case.htm (statement for changing marker color based on depth)
 
+https://www.colorhexa.com/ (color codes for marker color based on depth)
+
 https://www.igismap.com/legend-in-leafletjs-map-with-topojson/ (creating legend)
 
 https://leafletjs.com/examples/choropleth/ (html file code for legend)
-
-https://www.colorhexa.com/ (color codes for marker color based on depth)
