@@ -4,7 +4,7 @@ files for Data Boot Camp Module 15 Leaflet Challege
 ## Challenge Overview 
 In this challenge I built a world map tracking daily earthquake data from the United States Geological Survey (USGS). The USGS provides earthquake data in several formats, which are updated every 5 minutes. Using the USGS GeoJSON feed (https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php), I chose the dataset for "All Earthquakes from the Past Day" and used JavaScript to create a map with the following features: 
 
-Link to map: 
+Link to map: https://andrewdhawthorne.github.io/Module-15-Leaflet-Challenge/
 
 1. Data markers reflect the magnitude of the earthquake by their size (higher magnitudes correspond with a larger radius).
 
